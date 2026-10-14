@@ -3,13 +3,15 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual Environment
+# Virtual Environment & Package Managers
 venv/
 .venv/
 env/
 ENV/
-.toml
-.lock
+.python-version
+*.lock
+uv.lock
+
 # Environment and sensitive keys
 .env
 *.env.local
