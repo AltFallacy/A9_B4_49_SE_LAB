@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sports Management System (SPMS){% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('dashboard') if is_authenticated else url_for('login') }}" class="nav-brand">
+                <span>SPMS</span>
+                <span class="brand-badge">Sports Inventory</span>
+            </a>
+
+            {% if is_authenticated %}
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                    <li><a href="{{ url_for('equipment_list') }}">Equipment Catalog</a></li>
+                    <li><a href="{{ url_for('add_equipment') }}">+ Add Equipment</a></li>
+                    <li><span class="user-tag">User: {{ current_user }}</span></li>
+                    <li><a href="{{ url_for('logout') }}" class="btn-logout">Logout</a></li>
+                </ul>
+            </nav>
+            {% else %}
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('login') }}">Staff Login</a></li>
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Content Wrapper -->
+    <main class="main-wrapper">
+
+        <!-- Flash Notification Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Fallback Error Display -->
+        {% if error_code %}
+        <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+            <h1 style="font-size: 3rem; color: var(--danger); margin-bottom: 0.5rem;">{{ error_code }}</h1>
+            <h2 style="margin-bottom: 1rem;">{{ error_title }}</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">{{ error_message }}</p>
+            <a href="{{ url_for('dashboard') if is_authenticated else url_for('login') }}" class="btn btn-primary">
+                Return to Safety
+            </a>
+        </div>
+        {% else %}
+            <!-- Page-Specific Body -->
+            {% block content %}{% endblock %}
+        {% endif %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="nav-container" style="justify-content: center;">
+            <p>Sports Management System (SPMS) &copy; 2026 &mdash; Software Engineering PBL Project</p>
+        </div>
+    </footer>
+
+</body>
+</html>

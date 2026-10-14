@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard &mdash; Sports Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h1 class="card-title">Inventory Overview</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+                Logged in as <strong>{{ current_user }}</strong> &mdash; Quick metrics and inventory status
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">+ Add Equipment</a>
+        </div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-title">Catalog Items</span>
+            <span class="stat-number">{{ total_items }}</span>
+            <span class="stat-desc">Distinct equipment records</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-title">Total Units in Stock</span>
+            <span class="stat-number">{{ total_units }}</span>
+            <span class="stat-desc">Physical items available</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-title">Good Condition</span>
+            <span class="stat-number stat-badge-good">{{ condition_stats['Good'] }}</span>
+            <span class="stat-desc">Ready for immediate play</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-title">Needs Repair</span>
+            <span class="stat-number stat-badge-warning">{{ condition_stats['Needs Repair'] }}</span>
+            <span class="stat-desc">Awaiting maintenance</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-title">Damaged</span>
+            <span class="stat-number stat-badge-danger">{{ condition_stats['Damaged'] }}</span>
+            <span class="stat-desc">Requires replacement</span>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Equipment Activity -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title" style="font-size: 1.1rem;">Recently Added Equipment</h2>
+        <a href="{{ url_for('equipment_list') }}" class="btn btn-secondary btn-sm">View All &rarr;</a>
+    </div>
+
+    {% if recent_items %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Equipment Name</th>
+                    <th>Category</th>
+                    <th style="width: 100px;">Quantity</th>
+                    <th style="width: 130px;">Condition</th>
+                    <th style="width: 120px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_items %}
+                <tr>
+                    <td><strong>#{{ item.id }}</strong></td>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td>{{ item.category }}</td>
+                    <td>{{ item.quantity }} units</td>
+                    <td>
+                        {% if item.condition == 'Good' %}
+                            <span class="badge badge-good">Good</span>
+                        {% elif item.condition == 'Needs Repair' %}
+                            <span class="badge badge-repair">Needs Repair</span>
+                        {% else %}
+                            <span class="badge badge-damaged">Damaged</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('edit_equipment', item_id=item.id) }}" class="btn btn-secondary btn-sm">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-state-icon">&#127936;</span>
+        <p class="empty-state-text">No sports equipment records found in the database.</p>
+        <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">Add First Equipment</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

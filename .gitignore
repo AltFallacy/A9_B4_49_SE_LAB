@@ -1,0 +1,31 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Environment and sensitive keys
+.env
+*.env.local
+
+# SQLite database files
+*.db
+*.sqlite3
+instance/
+
+# Pytest / Testing caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store

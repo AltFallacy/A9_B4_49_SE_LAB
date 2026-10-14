@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Equipment Catalog &mdash; Sports Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div>
+            <h1 class="card-title">Sports Equipment Inventory</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+                Showing {{ total_count }} item{% if total_count != 1 %}s{% endif %} in catalog
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">+ Add New Equipment</a>
+        </div>
+    </div>
+
+    <!-- Search Bar & Filters -->
+    <div class="actions-bar">
+        <form method="GET" action="{{ url_for('equipment_list') }}" class="search-form">
+            <input 
+                type="text" 
+                name="search" 
+                class="search-input" 
+                placeholder="Search by equipment name, category, or ID..." 
+                value="{{ search_query }}"
+            >
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if search_query %}
+            <a href="{{ url_for('equipment_list') }}" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if search_query %}
+    <p style="margin-bottom: 1rem; font-size: 0.9rem; color: var(--secondary);">
+        Filtering by search query: <strong>"{{ search_query }}"</strong> &mdash; {{ total_count }} matching record{% if total_count != 1 %}s{% endif %} found.
+    </p>
+    {% endif %}
+
+    <!-- Equipment Data Table -->
+    {% if items %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>Equipment Name</th>
+                    <th>Category</th>
+                    <th style="width: 100px;">Quantity</th>
+                    <th style="width: 130px;">Condition</th>
+                    <th>Description</th>
+                    <th style="width: 160px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong>#{{ item.id }}</strong></td>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td>{{ item.category }}</td>
+                    <td><strong>{{ item.quantity }}</strong></td>
+                    <td>
+                        {% if item.condition == 'Good' %}
+                            <span class="badge badge-good">Good</span>
+                        {% elif item.condition == 'Needs Repair' %}
+                            <span class="badge badge-repair">Needs Repair</span>
+                        {% else %}
+                            <span class="badge badge-damaged">Damaged</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: var(--secondary); max-width: 250px;">
+                        {{ item.description if item.description else '&mdash;'|safe }}
+                    </td>
+                    <td>
+                        <div class="table-actions" style="justify-content: center;">
+                            <a href="{{ url_for('edit_equipment', item_id=item.id) }}" class="btn btn-secondary btn-sm">
+                                Edit
+                            </a>
+                            <!-- Secure POST form for deletion with CSRF protection -->
+                            <form 
+                                method="POST" 
+                                action="{{ url_for('delete_equipment', item_id=item.id) }}" 
+                                style="display: inline;"
+                                onsubmit="return confirm('Are you sure you want to delete Equipment #{{ item.id }} ({{ item.name }})?');"
+                            >
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <span class="empty-state-icon">&#128269;</span>
+        {% if search_query %}
+            <p class="empty-state-text">No equipment records found matching "<strong>{{ search_query }}</strong>".</p>
+            <a href="{{ url_for('equipment_list') }}" class="btn btn-secondary">Reset Search</a>
+        {% else %}
+            <p class="empty-state-text">No equipment has been registered in the system yet.</p>
+            <a href="{{ url_for('add_equipment') }}" class="btn btn-primary">Add Your First Equipment Item</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
